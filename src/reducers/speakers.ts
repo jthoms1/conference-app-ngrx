@@ -4,15 +4,11 @@ import * as speaker from '../actions/speaker';
 import * as collection from '../actions/collection';
 
 
-export type SpeakerEntries = {
-  [id: string]: Speaker
-}
-
 export interface State {
-  ids: string[];
-  entities: SpeakerEntries;
-  selectedSpeakerId: string | null
-};
+  ids: Speaker['id'][];
+  entities: { [id: string]: Speaker};
+  selectedSpeakerId?: string
+}
 
 export const initialState: State = {
   ids: [],
@@ -28,12 +24,12 @@ export function reducer(state = initialState, action: speaker.Actions | collecti
       const newSpeakers = speakers.filter((speaker: Speaker) => !state.entities[speaker.id]);
 
       const newSpeakerIds = newSpeakers.map((speaker: Speaker) => speaker.id);
-      const newSpeakerEntities = newSpeakers.reduce((entities: SpeakerEntries, speaker: Speaker) => {
+      const newSpeakerEntities = newSpeakers.reduce((entities: State['entities'], speaker: Speaker) => {
         return {
           ...entities,
           [speaker.id]: speaker
         };
-      }, <SpeakerEntries>{});
+      }, <State['entities']>{});
 
       return {
         ...state,
@@ -93,9 +89,9 @@ export const getSelectedId = (state: State) => state.selectedSpeakerId;
 export const getSelected = createSelector(
   getEntities,
   getSelectedId,
-  (entities: SpeakerEntries, selectedId: string) => entities[selectedId]
+  (entities: State['entities'], selectedId: string) => entities[selectedId]
 );
 
-export const getAll = createSelector(getEntities, getIds, (entities: SpeakerEntries , ids: string[]) => {
+export const getAll = createSelector(getEntities, getIds, (entities: State['entities'] , ids: State['ids']) => {
   return ids.map((id: string) => entities[id]);
 });
