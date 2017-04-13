@@ -11,7 +11,7 @@ export type SpeakerEntries = {
 export interface State {
   ids: string[];
   entities: SpeakerEntries;
-  selectedSpeakerId: string | null;
+  selectedSpeakerId: string | null
 };
 
 export const initialState: State = {
@@ -28,41 +28,41 @@ export function reducer(state = initialState, action: speaker.Actions | collecti
       const newSpeakers = speakers.filter((speaker: Speaker) => !state.entities[speaker.id]);
 
       const newSpeakerIds = newSpeakers.map((speaker: Speaker) => speaker.id);
-      const newSpeakerEntities = newSpeakers.reduce((entities: SpeakerEntries, book: Speaker) => {
+      const newSpeakerEntities = newSpeakers.reduce((entities: SpeakerEntries, speaker: Speaker) => {
         return {
           ...entities,
-          [book.id]: book
+          [speaker.id]: speaker
         };
-      }, {});
+      }, <SpeakerEntries>{});
 
       return {
         ...state,
         ids: [ ...state.ids, ...newSpeakerIds ],
         entities: {
           ...state.entities,
-          newSpeakerEntities
+          ...newSpeakerEntities
         },
       };
     }
 
-    case book.LOAD: {
-      const book = action.payload;
+    case speaker.LOAD: {
+      const speaker = action.payload;
 
-      if (state.ids.includes(book.id)) {
+      if (state.ids.includes(speaker.id)) {
         return state;
       }
 
       return {
         ...state,
-        ids: [ ...state.ids, book.id ],
+        ids: [ ...state.ids, speaker.id ],
         entities: {
           ...state.entities,
-          [book.id]: book
+          [speaker.id]: speaker
         }
       };
     }
 
-    case book.SELECT: {
+    case speaker.SELECT: {
       return {
         ...state,
         selectedSpeakerId: action.payload

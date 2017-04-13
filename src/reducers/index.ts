@@ -17,3 +17,28 @@ export interface State {
   speakers: fromSpeakers.State;
   locations: fromLocations.State;
 }
+
+/**
+ * Because metareducers take a reducer function and return a new reducer,
+ * we can use our compose helper to chain them together. Here we are
+ * using combineReducers to make our top level reducer, and then
+ * wrapping that in storeLogger. Remember that compose applies
+ * the result from right to left.
+ */
+const reducers = {
+  sessions: fromSessions.reducer,
+  speakers: fromSpeakers.reducer,
+  locations: fromLocations.reducer
+};
+
+
+const developmentReducer: ActionReducer<State> = compose(storeFreeze, combineReducers)(reducers);
+const productionReducer: ActionReducer<State> = combineReducers(reducers);
+
+export function reducer(state: any, action: any) {
+  if (environment.production) {
+    return productionReducer(state, action);
+  } else {
+    return developmentReducer(state, action);
+  }
+}
